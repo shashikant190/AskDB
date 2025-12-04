@@ -1,0 +1,46 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+}
+
+.container {
+    width: 760px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    margin-top: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 12px #ccc;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    box-sizing: border-box;
+}
+
+textarea {
+    height: 120px;
+}
+
+button {
+    padding: 10px 15px;
+    background: #111;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-right: 8px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+.msg { color: red; margin-top: 10px; }

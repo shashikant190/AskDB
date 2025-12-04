@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Ask Your Database – Project</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="api.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Ask Your Database</h1>
+
+        <div>
+            <strong>Project:</strong> <span id="projName"></span>
+            <button id="btnAutodetect">Autodetect Schema</button>
+            <button id="btnLoad">Load Schema</button>
+            <button id="btnSave">Save Schema</button>
+        </div>
+
+        <h3>Schema Viewer</h3>
+        <div id="schemaViewer" style="max-height:220px; overflow:auto; border:1px solid #ddd; padding:10px;"></div>
+
+        <h3>Query</h3>
+        <textarea id="queryText" placeholder="Ask your database..."></textarea>
+        <button id="runBtn">Run Query</button>
+
+        <h3>SQL</h3>
+        <pre id="sql"></pre>
+
+        <h3>Results</h3>
+        <table id="results"></table>
+    </div>
+
+    <script>
+        const project = localStorage.getItem("project") || "default";
+        document.getElementById("projName").innerText = project;
+
+        async function refreshSchemaViewer() {
+            // Try loadSchema (server will return schema or error)
+            const res = await api.loadSchema(project);
+            const viewer = document.getElementById("schemaViewer");
+            if (res.error) {
+                viewer.innerText = "Schema not loaded. Try Autodetect.";
+                return;
+            }
+            const schema = res.schema || res; // adapt if API returns {status, schema}
+            // If the response contains schema field:
+            let obj = schema.schema || schema;
+            viewer.innerHTML = "<pre style='white-space:pre-wrap'>" + JSON.stringify(obj, null, 2) + "</pre>";
+        }
+
+        document.getElementById("btnAutodetect").addEventListener("click", async () => {
+            document.getElementById("schemaViewer").innerText = "Detecting...";
+            const res = await api.autodetect(project);
+            if (res.error) {
+                document.getElementById("schemaViewer").innerText = "Autodetect failed: " + JSON.stringify(res.error);
+                return;
+            }
+            // Show entities
+            document.getElementById("schemaViewer").innerHTML = "<pre>" + JSON.stringify(res, null, 2) + "</pre>";
+        });
+
+        document.getElementById("btnLoad").addEventListener("click", async () => {
+            document.getElementById("schemaViewer").innerText = "Loading...";
+            const res = await api.loadSchema(project);
+            if (res.error) {
+                document.getElementById("schemaViewer").innerText = "Load failed: " + JSON.stringify(res.error);
+                return;
+            }
+            document.getElementById("schemaViewer").innerHTML = "<pre>" + JSON.stringify(res.schema || res, null, 2) + "</pre>";
+        });
+
+        document.getElementById("btnSave").addEventListener("click", async () => {
+            // take the currently displayed schema if any and POST save
+            const viewer = document.getElementById("schemaViewer");
+            try {
+                const schemaText = viewer.innerText;
+                const obj = JSON.parse(schemaText);
+                const res = await api.saveSchema(project, obj);
+                if (res.error) {
+                    alert("Save failed: " + JSON.stringify(res.error));
+                    return;
+                }
+                alert("Saved");
+            } catch (e) {
+                alert("No valid schema to save. Use Autodetect or load a schema first.");
+            }
+        });
+
+        document.getElementById("runBtn").addEventListener("click", async () => {
+            const q = document.getElementById("queryText").value;
+            document.getElementById("sql").innerText = "Running…";
+            const res = await api.query(project, q);
+            if (res.error) {
+                document.getElementById("sql").innerText = "Error: " + JSON.stringify(res.error);
+                return;
+            }
+            document.getElementById("sql").innerText = res.sql || "";
+            const table = document.getElementById("results");
+            table.innerHTML = "";
+
+            if (!res.result || res.result.length === 0) {
+                table.innerHTML = "<tr><td>No results</td></tr>";
+                return;
+            }
+
+            const headers = Object.keys(res.result[0]);
+            let thead = "<tr>";
+            headers.forEach(h => thead += `<th>${h}</th>`);
+            thead += "</tr>";
+            table.innerHTML += thead;
+
+            res.result.forEach(row => {
+                let tr = "<tr>";
+                headers.forEach(h => tr += `<td>${row[h]}</td>`);
+                tr += "</tr>";
+                table.innerHTML += tr;
+            });
+        });
+
+        // initial attempt to load schema viewer
+        refreshSchemaViewer();
+    </script>
+</body>
+</html>

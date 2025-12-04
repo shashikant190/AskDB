@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Ask Your Database – Connect</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="api.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Ask Your Database</h1>
+        <p>Connect your PostgreSQL DB (Supabase, Neon, RDS, etc)</p>
+
+        <label>Project Name</label>
+        <input id="project" placeholder="myproject123" />
+
+        <label>Database URL</label>
+        <input id="dburl" placeholder="postgresql://user:pass@host:5432/postgres" />
+
+        <button id="connectBtn">Connect</button>
+
+        <p id="msg" class="msg"></p>
+    </div>
+
+    <script>
+        document.getElementById("connectBtn").addEventListener("click", connectDB);
+
+        async function connectDB() {
+            const project = document.getElementById("project").value.trim();
+            const url = document.getElementById("dburl").value.trim();
+            const msg = document.getElementById("msg");
+
+            if (!project || !url) {
+                msg.innerText = "Please enter project and database URL.";
+                return;
+            }
+            msg.innerText = "Connecting…";
+            const res = await api.connect(project, url);
+            if (res.error) {
+                msg.innerText = "Error: " + JSON.stringify(res.error);
+                return;
+            }
+            // Save project locally and go to project page
+            localStorage.setItem("project", project);
+            msg.innerText = "Connected. Redirecting…";
+            setTimeout(() => window.location = "project.html", 300);
+        }
+    </script>
+</body>
+</html>
