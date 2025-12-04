@@ -48,3 +48,8 @@ Feel free to:
 4. test with your database
 
 # Your feedback will shape v1.
+
+<p align="center">
+  <img src="https://github.com/shashikant190/AskDB/blob/main/screenshot/AskDB_GithubSS.png" alt="AskDB DataSense" width="100%" />
+</p>
+
