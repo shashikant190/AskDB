@@ -1,12 +1,14 @@
 // api.js
-const API_URL = "http://127.0.0.1:8000";
+// const API_URL = "http://127.0.0.1:8000";
+const API_URL = "https://askdb-u0hs.onrender.com";
+
 
 async function safeFetch(path, opts = {}) {
     try {
         const res = await fetch(`${API_URL}${path}`, opts);
         const contentType = res.headers.get("content-type") || "";
         if (!res.ok) {
-            // Try to parse JSON error
+ 
             if (contentType.includes("application/json")) {
                 const err = await res.json();
                 return { error: err };
