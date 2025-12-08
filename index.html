@@ -40,6 +40,7 @@
                 msg.innerText = "Error: " + JSON.stringify(res.error);
                 return;
             }
+            // 
             // Save project locally and go to project page
             localStorage.setItem("project", project);
             msg.innerText = "Connected. Redirecting…";
