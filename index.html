@@ -20,6 +20,23 @@
         <button id="connectBtn">Connect</button>
 
         <p id="msg" class="msg"></p>
+
+        <!-- ✅ Informational notes (added only) -->
+        <div class="notes">
+            <p><strong>Note:</strong> The backend server is hosted on Render (free tier).  
+            If it has been idle, the first connection may take ~20–40 seconds to wake up.</p>
+
+            <p><strong>Database URL format:</strong></p>
+            <code>
+                postgresql://USERNAME:PASSWORD@HOST:PORT/DATABASE
+            </code>
+            <p>
+                Example (Supabase pooler):<br />
+                <code>
+                    postgresql://postgres.projectid:password@aws-1-region.pooler.supabase.com:5432/postgres
+                </code>
+            </p>
+        </div>
     </div>
 
     <script>
@@ -40,8 +57,7 @@
                 msg.innerText = "Error: " + JSON.stringify(res.error);
                 return;
             }
-            // 
-            // Save project locally and go to project page
+
             localStorage.setItem("project", project);
             msg.innerText = "Connected. Redirecting…";
             setTimeout(() => window.location = "project.html", 300);
